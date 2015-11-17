@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DownloaderDemo/DownloaderDemo.iml" filepath="$PROJECT_DIR$/DownloaderDemo/DownloaderDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DownloaderLib/DownloaderLib.iml" filepath="$PROJECT_DIR$/DownloaderLib/DownloaderLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MutilDownload.iml" filepath="$PROJECT_DIR$/MutilDownload.iml" />
+    </modules>
+  </component>
+</project>

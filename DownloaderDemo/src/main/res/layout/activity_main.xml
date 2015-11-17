@@ -1,0 +1,111 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <ListView
+        android:id="@+id/list_download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载"/>
+        <Button
+            android:id="@+id/btn_stop_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"/>
+        <Button
+            android:id="@+id/btn_cancle_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载"/>
+        <Button
+            android:id="@+id/btn_stop_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"/>
+        <Button
+            android:id="@+id/btn_cancle_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载"/>
+        <Button
+            android:id="@+id/btn_stop_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"/>
+        <Button
+            android:id="@+id/btn_cancle_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载"/>
+        <Button
+            android:id="@+id/btn_stop_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"/>
+        <Button
+            android:id="@+id/btn_cancle_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_delete_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="清空数据库"/>
+
+</LinearLayout>
