@@ -2,11 +2,10 @@ package com.lib.download.service;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.lib.download.DownloadListener;
 import com.lib.download.DownloadManager;
-import com.lib.download.contact.Contact;
+import com.lib.download.contact.DownloadContact;
 import com.lib.download.contact.FileInfo;
 import com.lib.download.contact.ThreadInfo;
 import com.lib.download.db.ThreadDAO;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 下载任务
@@ -35,7 +35,7 @@ public class DownloadTask {
     // 数据库句柄
     private ThreadDAO threadDao = null;
     // 已下载的数据大小
-    private long loadSize = 0;
+    private AtomicLong loadSize = new AtomicLong();
     // 停止下载任务的标志位
     private boolean isStop = false;
     // 线程总数
@@ -44,8 +44,6 @@ public class DownloadTask {
     private List<DownloadThread> listDownloadThreads;
     // 线程返回异常的次数
     private int exceptionCount = 0;
-    // 最大允许的异常重连次数(线程太多容易异常?)，超过则下载失败
-//    private static final int MAX_EXCEPTION_COUNT = 50;
     // 下载监听器
     private DownloadListener downloadListener;
     // 已下载数据大小和时间，用来计算下载速度
@@ -77,11 +75,11 @@ public class DownloadTask {
 
         if (listThreadInfos.size() == 0) {
             // 数据库不存在数据
-            loadSize = 0;
+            loadSize.set(0);
             calcLoadSize = 0;
             long blockSize = fileInfo.getLength() / threadCount;
             for (int i = 0; i < threadCount; i++) {
-                threadInfo = new ThreadInfo(i, fileInfo.getUrl(), i * blockSize, blockSize, 0, Contact.DOWNLOAD_START);
+                threadInfo = new ThreadInfo(i, fileInfo.getUrl(), i * blockSize, blockSize, 0, DownloadContact.DOWNLOAD_DOWNLOADING);
                 if(i == threadCount - 1) {
                     // 除不尽余下的大小添加到最后
                     long remainderSize = fileInfo.getLength() % threadCount;
@@ -95,9 +93,11 @@ public class DownloadTask {
                 // 在线程池中启动下载线程
                 threadPool.execute(downloadThread);
             }
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_START);
+            downloadListener.onDownloadStart(fileInfo);
             // 监听回调
             if(downloadListener != null) {
-                downloadListener.onDownloadStart(fileInfo);
+                sendStatusBroadcast(fileInfo);
             }
         } else {
             // 数据库存在数据
@@ -105,40 +105,45 @@ public class DownloadTask {
             threadCount = 0;
             for(ThreadInfo info : listThreadInfos) {
                 // 数据库存在数据则先保存整体文件的已下载长度
-                loadSize += info.getLoadSize();
+//                loadSize += info.getLoadSize();
+                loadSize.getAndAdd(info.getLoadSize());
                 // 计算文件总长度
                 fileLength += info.getSize();
                 threadCount++;
                 // 未下载完的才启动下载
-                if (info.getStatus() != Contact.DOWNLOAD_FINISHED) {
-                    info.setStatus(Contact.DOWNLOAD_START);
+                if (info.getStatus() != DownloadContact.DOWNLOAD_FINISHED) {
+                    info.setStatus(DownloadContact.DOWNLOAD_DOWNLOADING);
                     threadDao.updateThread(info);
                     downloadThread = new DownloadThread(info);
                     listDownloadThreads.add(downloadThread);
                     threadPool.execute(downloadThread);
                 }
             }
-            calcLoadSize = loadSize;
-            fileInfo.setLoadSize(loadSize);
+            calcLoadSize = loadSize.get();
+//            calcLoadSize = loadSize;
+            fileInfo.setLoadSize(calcLoadSize);
             fileInfo.setLength(fileLength);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_START);
+            sendStatusBroadcast(fileInfo);
             // 监听回调
             if(downloadListener != null) {
+                downloadListener.onDownloadStart(fileInfo);
                 downloadListener.onDownloadResumed(fileInfo);
             }
         }
 
         if(listDownloadThreads.size() == 0) {
             // 没有下载线程，发送下载失败广播
-            fileInfo.setStatus(Contact.DOWNLOAD_FAILED);
-            sendStatusBroadcast(fileInfo, Contact.ACTION_FAILED);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_FAILED);
+            sendStatusBroadcast(fileInfo);
             // 监听回调
             if(downloadListener != null) {
                 downloadListener.onDownloadFailed(fileInfo);
             }
         } else {
             // 发送开始下载广播
-            fileInfo.setStatus(Contact.DOWNLOAD_START);
-            sendStatusBroadcast(fileInfo, Contact.ACTION_START);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_DOWNLOADING);
+            sendStatusBroadcast(fileInfo);
             calcTime = System.currentTimeMillis();
         }
     }
@@ -148,8 +153,9 @@ public class DownloadTask {
      * @param fileInfo
      */
     public void sendUpdateBroadcast(FileInfo fileInfo) {
-        Intent intent = new Intent(Contact.ACTION_UPDATE);
-        intent.putExtra(Contact.FILE_INFO_KEY, fileInfo);
+        fileInfo.setStatus(DownloadContact.DOWNLOAD_DOWNLOADING);
+        Intent intent = new Intent(DownloadContact.ACTION_DOWNLOAD);
+        intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.sendBroadcast(intent);
         // 监听回调
         if(downloadListener != null) {
@@ -160,11 +166,10 @@ public class DownloadTask {
     /**
      * 发送状态广播
      * @param fileInfo
-     * @param actionStatus
      */
-    public void sendStatusBroadcast(FileInfo fileInfo, String actionStatus) {
-        Intent intent = new Intent(actionStatus);
-        intent.putExtra(Contact.FILE_INFO_KEY, fileInfo);
+    public void sendStatusBroadcast(FileInfo fileInfo) {
+        Intent intent = new Intent(DownloadContact.ACTION_DOWNLOAD);
+        intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.sendBroadcast(intent);
     }
 
@@ -188,7 +193,7 @@ public class DownloadTask {
      */
     public void cancleDownload() {
         isStop = true;
-        fileInfo.setStatus(Contact.DOWNLOAD_CANCLE);
+        fileInfo.setStatus(DownloadContact.DOWNLOAD_CANCLE);
         fileInfo.setLoadSize(0);
         // 清空所有活动中的线程
         threadPool.execute(new Runnable() {
@@ -209,12 +214,12 @@ public class DownloadTask {
                 if (tmpFile.exists()) {
                     tmpFile.delete();
                 }
-                fileInfo.setStatus(Contact.DOWNLOAD_CANCLE);
+                fileInfo.setStatus(DownloadContact.DOWNLOAD_CANCLE);
                 fileInfo.setLoadSize(0);
                 // 发送取消广播
-                sendStatusBroadcast(fileInfo, Contact.ACTION_CANCLE);
+                sendStatusBroadcast(fileInfo);
                 // 发送更新广播
-                sendUpdateBroadcast(fileInfo);
+//                sendUpdateBroadcast(fileInfo);
                 // 删除数据库中的记录
                 threadDao.deleteThread(fileInfo.getUrl());
             }
@@ -229,15 +234,20 @@ public class DownloadTask {
      * 判断是否下载完成
      * @return
      */
-    private void checkDownloadFinished() {
-        if (loadSize == fileInfo.getLength()) {
+    private synchronized void checkDownloadFinished() {
+        if (loadSize.get() == fileInfo.getLength()) {
             // 表示整个文件都已经下载完成
-            fileInfo.setStatus(Contact.DOWNLOAD_FINISHED);
-            sendUpdateBroadcast(fileInfo);
-            sendStatusBroadcast(fileInfo, Contact.ACTION_FINISHED);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_FINISHED);
+            fileInfo.setSpeed(0);
+            sendStatusBroadcast(fileInfo);
             // 重命名文件
             File tmpFile = new File(DownloadManager.getDownloadDir(), fileInfo.getName() + ".tmp");
-            File appFile = new File(DownloadManager.getDownloadDir(), fileInfo.getName());
+            File appFile;
+            if (fileInfo.getName().endsWith(".apk")) {
+                appFile = new File(DownloadManager.getDownloadDir(), fileInfo.getName());
+            } else {
+                appFile = new File(DownloadManager.getDownloadDir(), fileInfo.getName() + ".apk");
+            }
             tmpFile.renameTo(appFile);
             // 删除数据库中的记录
             threadDao.deleteThread(fileInfo.getUrl());
@@ -249,8 +259,8 @@ public class DownloadTask {
         }
         if(listDownloadThreads.size() == 0) {
             // 如果没有下载完整且没有下载线程,则发送下载停止广播
-            fileInfo.setStatus(Contact.DOWNLOAD_PAUSE);
-            sendStatusBroadcast(fileInfo, Contact.ACTION_PAUSE);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
+            sendStatusBroadcast(fileInfo);
             // 监听回调
             if(downloadListener != null) {
                 downloadListener.onDownloadPaused(fileInfo);
@@ -264,8 +274,8 @@ public class DownloadTask {
      * @param threadInfo
      * @return 如果异常次数不超过MAX_EXCEPTION_NUM次则重启一个线程下载
      */
-    private boolean restartDownload(DownloadThread currentThread, ThreadInfo threadInfo) {
-        Log.e("DownloadTask", "count: " + (exceptionCount + 1));
+    private synchronized boolean restartDownload(DownloadThread currentThread, ThreadInfo threadInfo) {
+//        Log.e("DownloadTask", "count: " + (exceptionCount + 1));
         if (exceptionCount++ < DownloadManager.getMaxExceptionCount()) {
             // 重启一个线程下载
             DownloadThread newThread = new DownloadThread(threadInfo);
@@ -280,10 +290,10 @@ public class DownloadTask {
         } else {
             // 超过 MAX_EXCEPTION_COUNT 次则报错退出
             listDownloadThreads.remove(currentThread);
-            threadInfo.setStatus(Contact.DOWNLOAD_FAILED);
+            threadInfo.setStatus(DownloadContact.DOWNLOAD_FAILED);
             threadDao.updateThread(threadInfo);
-            fileInfo.setStatus(Contact.DOWNLOAD_FAILED);
-            sendStatusBroadcast(fileInfo, Contact.ACTION_FAILED);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_FAILED);
+            sendStatusBroadcast(fileInfo);
             // 监听回调
             if(downloadListener != null) {
                 downloadListener.onDownloadFailed(fileInfo);
@@ -295,17 +305,32 @@ public class DownloadTask {
     /**
      * 计算下载速度并更新进度
      */
-    private void calcDownloadSpeed() {
-        if(System.currentTimeMillis() - calcTime > 500 && !isStop) {
-            long time = System.currentTimeMillis();
-            // 下载速度为(?b/s)
-            long speed = (loadSize - calcLoadSize) * 1000 / (time - calcTime);
-            calcLoadSize = loadSize;
-            calcTime = time;
+    private synchronized void calcDownloadSpeed(long calcTimetime) {
+        if(calcTimetime - calcTime > 500 && !isStop) {
+            // 下载速度为(b/s)
+            long speed = (loadSize.get() - calcLoadSize) * 1000 / (calcTimetime - calcTime);
+            calcLoadSize = loadSize.get();
+            calcTime = calcTimetime;
             fileInfo.setSpeed(speed);
             sendUpdateBroadcast(fileInfo);
         }
     }
+
+    /**
+     * 检测停止下载状态，并发送广播
+     */
+    private synchronized void checkStopDownload() {
+        if (listDownloadThreads.size() == 0) {
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
+            fileInfo.setSpeed(0);
+            sendStatusBroadcast(fileInfo);
+            // 监听回调
+            if(downloadListener != null) {
+                downloadListener.onDownloadPaused(fileInfo);
+            }
+        }
+    }
+
 
 
     /**
@@ -356,26 +381,23 @@ public class DownloadTask {
 //                    Log.w("DownloadThread", "thread[" + fileInfo.getName() + "--" + threadInfo.getThreadId() + "]:{"
 //                            + threadLoadSize + " ~ " + threadInfo.getSize() + "}");
                     while ((readLen = inputStream.read(bytes)) != -1) {
+                        long time = System.currentTimeMillis();
                         raFile.write(bytes, 0, readLen);
-                        loadSize += readLen;
-                        fileInfo.setLoadSize(loadSize);
+                        loadSize.getAndAdd(readLen);
+//                        loadSize += readLen;
+                        fileInfo.setLoadSize(loadSize.get());
                         threadLoadSize += readLen;
                         threadInfo.setLoadSize(threadLoadSize);
                         threadDao.updateThread(threadInfo);
                         // 500MS执行一次发送进度广播
-                        calcDownloadSpeed();
+                        calcDownloadSpeed(time);
                         if (isStop) {
                             // 停止下载
-                            threadInfo.setStatus(Contact.DOWNLOAD_PAUSE);
+                            threadInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
                             threadDao.updateThread(threadInfo);
-                            fileInfo.setStatus(Contact.DOWNLOAD_PAUSE);
-                            fileInfo.setSpeed(0);
-                            sendStatusBroadcast(fileInfo, Contact.ACTION_PAUSE);
+                            // 移除当前线程
                             listDownloadThreads.remove(this);
-                            // 监听回调
-                            if(downloadListener != null) {
-                                downloadListener.onDownloadPaused(fileInfo);
-                            }
+                            checkStopDownload();
                             return;
                         }
                     }
@@ -385,7 +407,7 @@ public class DownloadTask {
                         restartDownload(this, threadInfo);
                     } else {
                         // 到这里表示这个线程已经下载完成
-                        threadInfo.setStatus(Contact.DOWNLOAD_FINISHED);
+                        threadInfo.setStatus(DownloadContact.DOWNLOAD_FINISHED);
                         threadDao.updateThread(threadInfo);
                         listDownloadThreads.remove(this);
                         // 判断是否已经所有线程都已经下载完成
@@ -393,7 +415,7 @@ public class DownloadTask {
                     }
                 } else {
                     // 如果返回码有误则重新开启一个线程下载
-                    Log.e("DownloadThread", "code : " + conn.getResponseCode());
+//                    Log.e("DownloadThread", "code : " + conn.getResponseCode());
                     restartDownload(this, threadInfo);
                 }
             } catch (IOException e) {

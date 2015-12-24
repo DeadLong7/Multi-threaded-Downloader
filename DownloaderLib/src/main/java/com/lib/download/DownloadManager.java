@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.lib.download.contact.Contact;
+import com.lib.download.contact.DownloadContact;
 import com.lib.download.contact.FileInfo;
 import com.lib.download.db.ThreadDAOImpl;
 import com.lib.download.service.DownloadServer;
@@ -79,7 +79,7 @@ public class DownloadManager {
      * @return
      */
     public static int getMaxExceptionCount() {
-        return config.getMaxExceptionCount();
+        return config.getMaxRedirectCount();
     }
 
     /**
@@ -88,11 +88,22 @@ public class DownloadManager {
      * @return
      */
     private static boolean checkFileIsExists(Context context, FileInfo fileInfo) {
-        File file = new File(getDownloadDir(), fileInfo.getName());
+
+        File file;
+        if (fileInfo.getName().endsWith(".apk")) {
+            file = new File(getDownloadDir(), fileInfo.getName());
+        } else {
+            file = new File(getDownloadDir(), fileInfo.getName() + ".apk");
+        }
         if(file.exists()) {
-            // 已经下载
-            Toast.makeText(context, "文件已经存在", Toast.LENGTH_SHORT).show();
-            return true;
+            // 已经存在则删除重下
+//            Toast.makeText(context, "文件已经存在", Toast.LENGTH_SHORT).show();
+            file.delete();
+            if (ThreadDAOImpl.getInstance().isExists(fileInfo.getUrl())) {
+                // 删除数据库中的记录
+                ThreadDAOImpl.getInstance().deleteThread(fileInfo.getUrl());
+            }
+            return false;
         }
         DownloadTask task = mapTasks.get(fileInfo.getUrl());
         if(task != null) {
@@ -144,13 +155,19 @@ public class DownloadManager {
         if(checkFileIsExists(context, fileInfo)) {
             return;
         }
+        fileInfo.setStatus(DownloadContact.DOWNLOAD_WAIT);
         if (listener != null) {
             mapTasksListener.put(fileInfo.getUrl(), listener);
+            listener.onDownloadWaiting(fileInfo);
         }
-        fileInfo.setStatus(Contact.DOWNLOAD_WAIT);
+//        Intent intentBroadcast = new Intent(DownloadContact.ACTION_WAIT);
+        Intent intentBroadcast = new Intent(DownloadContact.ACTION_DOWNLOAD);
+        intentBroadcast.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
+        context.sendBroadcast(intentBroadcast);
+
         Intent intent = new Intent(context, DownloadServer.class);
-        intent.setAction(Contact.ACTION_START);
-        intent.putExtra(Contact.FILE_INFO_KEY, fileInfo);
+        intent.setAction(DownloadContact.ACTION_START);
+        intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.startService(intent);
     }
 
@@ -185,15 +202,11 @@ public class DownloadManager {
                 tmpFile.delete();
             }
             FileInfo fileInfo = new FileInfo(fileUrl, fileName);
-            fileInfo.setStatus(Contact.DOWNLOAD_CANCLE);
+            fileInfo.setStatus(DownloadContact.DOWNLOAD_CANCLE);
             fileInfo.setLoadSize(0);
             // 发送取消广播
-            Intent intent = new Intent(Contact.ACTION_CANCLE);
-            intent.putExtra(Contact.FILE_INFO_KEY, fileInfo);
-            context.sendBroadcast(intent);
-            // 发送更新广播
-            intent = new Intent(Contact.ACTION_UPDATE);
-            intent.putExtra(Contact.FILE_INFO_KEY, fileInfo);
+            Intent intent = new Intent(DownloadContact.ACTION_DOWNLOAD);
+            intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
             context.sendBroadcast(intent);
             // 删除数据库中的记录
             ThreadDAOImpl.getInstance().deleteThread(fileInfo.getUrl());

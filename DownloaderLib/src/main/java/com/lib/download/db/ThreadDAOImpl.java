@@ -2,7 +2,7 @@ package com.lib.download.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.lib.download.contact.Contact;
+import com.lib.download.contact.DownloadContact;
 import com.lib.download.contact.ThreadInfo;
 
 import org.litepal.crud.DataSupport;
@@ -63,7 +63,7 @@ public class ThreadDAOImpl implements ThreadDAO {
     @Override
     public void updataToPaused() {
         ThreadInfo threadInfo = new ThreadInfo();
-        threadInfo.setStatus(Contact.DOWNLOAD_PAUSE);
-        threadInfo.updateAll("status = ? or status = ?", ""+Contact.DOWNLOAD_START, ""+Contact.DOWNLOAD_FAILED);
+        threadInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
+        threadInfo.updateAll("status = ? or status = ?", ""+ DownloadContact.DOWNLOAD_DOWNLOADING, ""+ DownloadContact.DOWNLOAD_FAILED);
     }
 }

@@ -6,9 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.lib.download.DownloadManager;
-import com.lib.download.contact.Contact;
+import com.lib.download.contact.DownloadContact;
 import com.lib.download.contact.FileInfo;
 import com.lib.download.db.ThreadDAOImpl;
 
@@ -40,11 +41,12 @@ public class DownloadServer extends Service {
         manager = DownloadManager.getInstance();
         // 注册广播接收器
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Contact.ACTION_START);
-        filter.addAction(Contact.ACTION_PAUSE);
-        filter.addAction(Contact.ACTION_UPDATE);
-        filter.addAction(Contact.ACTION_FINISHED);
-        filter.addAction(Contact.ACTION_FAILED);
+//        filter.addAction(DownloadContact.ACTION_START);
+//        filter.addAction(DownloadContact.ACTION_PAUSE);
+//        filter.addAction(DownloadContact.ACTION_UPDATE);
+//        filter.addAction(DownloadContact.ACTION_FINISHED);
+//        filter.addAction(DownloadContact.ACTION_FAILED);
+        filter.addAction(DownloadContact.ACTION_DOWNLOAD);
         registerReceiver(mReceiver, filter);
     }
 
@@ -54,8 +56,8 @@ public class DownloadServer extends Service {
             // 如果intnet为空，可能是程序被强制关闭
             ThreadDAOImpl.getInstance().updataToPaused();
         } else {
-            if(Contact.ACTION_START.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
+            if(DownloadContact.ACTION_START.equals(intent.getAction())) {
+                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
                 if(ThreadDAOImpl.getInstance().isExists(fileInfo.getUrl())) {
                     // 数据库存在数据，则直接下载，线程数这里传多少无所谓，在下载任务中会处理
                     manager.addDownloadTask(this, fileInfo, DownloadManager.getMaxThreadNumOfTask());
@@ -128,8 +130,10 @@ public class DownloadServer extends Service {
                     manager.addDownloadTask(DownloadServer.this, fileInfo, threadCount);
                 }
             } catch (MalformedURLException e) {
+                Log.e("MalformedURLException", "MalformedURLException : "+e.toString() );
                 e.printStackTrace();
             } catch (IOException e) {
+                Log.e("IOException", "IOException : "+e.toString() );
                 e.printStackTrace();
             } finally {
                 try {
@@ -152,19 +156,17 @@ public class DownloadServer extends Service {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Contact.ACTION_UPDATE.equals(intent.getAction())) {
-
-            } else if (Contact.ACTION_START.equals(intent.getAction())) {
-
-            } else if (Contact.ACTION_PAUSE.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
-                manager.removeDownloadTask(fileInfo.getUrl());
-            } else if (Contact.ACTION_FINISHED.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
-                manager.removeDownloadTask(fileInfo.getUrl());
-            } else if (Contact.ACTION_FAILED.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
-                manager.removeDownloadTask(fileInfo.getUrl());
+            if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
+                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
+                switch (fileInfo.getStatus()) {
+                    case DownloadContact.DOWNLOAD_START:
+                        break;
+                    case DownloadContact.DOWNLOAD_PAUSE:
+                    case DownloadContact.DOWNLOAD_FINISHED:
+                    case DownloadContact.DOWNLOAD_FAILED:
+                        manager.removeDownloadTask(fileInfo.getUrl());
+                        break;
+                }
             }
         }
     };

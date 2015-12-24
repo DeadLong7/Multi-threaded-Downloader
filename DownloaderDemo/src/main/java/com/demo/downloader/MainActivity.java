@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.lib.download.DownloadListener;
 import com.lib.download.DownloadManager;
-import com.lib.download.contact.Contact;
+import com.lib.download.contact.DownloadContact;
 import com.lib.download.contact.FileInfo;
 import com.lib.download.contact.ThreadInfo;
 import com.lib.download.service.DownloadServer;
@@ -110,9 +110,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
         listDownload.setAdapter(adapter);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Contact.ACTION_UPDATE);
-        filter.addAction(Contact.ACTION_FINISHED);
-        filter.addAction(Contact.ACTION_CANCLE);
+        filter.addAction(DownloadContact.ACTION_DOWNLOAD);
+        filter.addAction(DownloadContact.ACTION_DOWNLOAD);
+        filter.addAction(DownloadContact.ACTION_DOWNLOAD);
         registerReceiver(mReceiver, filter);
     }
 
@@ -126,15 +126,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Contact.ACTION_UPDATE.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
+            if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
+                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
 //                Log.d("MainActivity", "ACTION_UPDATE: " + fileInfo);
                 adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(), fileInfo.getLength());
-            } else if (Contact.ACTION_FINISHED.equals(intent.getAction())) {
+            } else if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
                 Toast.makeText(MainActivity.this, "Finished", Toast.LENGTH_SHORT).show();
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
-            } else if (Contact.ACTION_CANCLE.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(Contact.FILE_INFO_KEY);
+                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
+            } else if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
+                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
                 Log.d("MainActivity", "ACTION_CANCLE: " + fileInfo);
             }
         }
@@ -186,6 +186,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
                 DataSupport.deleteAll(ThreadInfo.class);
                 break;
         }
+    }
+
+    @Override
+    public void onDownloadWaiting(FileInfo fileInfo) {
+        
     }
 
     @Override

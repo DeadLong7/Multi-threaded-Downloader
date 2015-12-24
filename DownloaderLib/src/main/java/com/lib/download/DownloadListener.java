@@ -7,6 +7,12 @@ import com.lib.download.contact.FileInfo;
  * Created by long on 2015/11/16.
  */
 public interface DownloadListener {
+
+    /**
+     * 等待下载
+     * @param fileInfo
+     */
+    public void onDownloadWaiting(FileInfo fileInfo);
     /**
      * 开始下载
      * @param fileInfo
