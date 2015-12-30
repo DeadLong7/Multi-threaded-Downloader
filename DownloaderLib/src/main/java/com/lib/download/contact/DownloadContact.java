@@ -6,6 +6,7 @@ package com.lib.download.contact;
 public class DownloadContact {
 
     public static final String FILE_INFO_KEY = "FileInfoKey";
+    public static final String NOTIFY_ID_KEY = "NotifyIdKey";
 
     // 未下载
     public static final int DOWNLOAD_NORMAL = 0;
@@ -32,8 +33,12 @@ public class DownloadContact {
     // 广播Action
     public static final String ACTION_DOWNLOAD = "ActionDownload";
     public static final String ACTION_START = "ActionStart";
+    public static final String ACTION_PAUSE = "ActionPause";
+    public static final String ACTION_CANCLE = "ActionCancle";
 
-    // 默认值
-//    public static final int MAX_THREAD_NUM_OF_TASK = 5;    // 一个任务最大的线程数
-//    public static final int SPLIT_SIZE_OF_THREAD = 1024 * 1024 * 5; // 拆分文件大小的标准，5MB
+    // 通知栏颜色
+    public static final int COLOR_NOTIFY_DEFAULT = 0xFF33B5E5;
+    public static final int COLOR_NOTIFY_PAUSE = 0xFF888888;
+    public static final int COLOR_NOTIFY_FINISH = 0xFF00CC9C;
+    public static final int COLOR_NOTIFY_FAILED = 0xFFFF4444;
 }

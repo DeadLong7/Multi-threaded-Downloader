@@ -38,6 +38,8 @@ public class DownloadTask {
     private AtomicLong loadSize = new AtomicLong();
     // 停止下载任务的标志位
     private boolean isStop = false;
+    // 取消下载任务的标志位
+    private boolean isCancle = false;
     // 线程总数
     private int threadCount;
     // 保存所有活动的线程
@@ -73,9 +75,9 @@ public class DownloadTask {
         DownloadThread downloadThread = null;
         listDownloadThreads = new ArrayList<DownloadThread>();
 
+        loadSize.set(0);
         if (listThreadInfos.size() == 0) {
             // 数据库不存在数据
-            loadSize.set(0);
             calcLoadSize = 0;
             long blockSize = fileInfo.getLength() / threadCount;
             for (int i = 0; i < threadCount; i++) {
@@ -193,6 +195,7 @@ public class DownloadTask {
      */
     public void cancleDownload() {
         isStop = true;
+        isCancle = true;
         fileInfo.setStatus(DownloadContact.DOWNLOAD_CANCLE);
         fileInfo.setLoadSize(0);
         // 清空所有活动中的线程
@@ -219,15 +222,14 @@ public class DownloadTask {
                 // 发送取消广播
                 sendStatusBroadcast(fileInfo);
                 // 发送更新广播
-//                sendUpdateBroadcast(fileInfo);
                 // 删除数据库中的记录
                 threadDao.deleteThread(fileInfo.getUrl());
+                // 监听回调
+                if (downloadListener != null) {
+                    downloadListener.onDownloadCanceled(fileInfo);
+                }
             }
         });
-        // 监听回调
-        if(downloadListener != null) {
-            downloadListener.onDownloadCanceled(fileInfo);
-        }
     }
 
     /**
@@ -320,7 +322,8 @@ public class DownloadTask {
      * 检测停止下载状态，并发送广播
      */
     private synchronized void checkStopDownload() {
-        if (listDownloadThreads.size() == 0) {
+        // 如果为取消状态则不发送暂停广播
+        if (listDownloadThreads.size() == 0 && !isCancle) {
             fileInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
             fileInfo.setSpeed(0);
             sendStatusBroadcast(fileInfo);

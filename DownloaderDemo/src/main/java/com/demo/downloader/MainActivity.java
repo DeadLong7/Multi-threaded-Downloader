@@ -128,14 +128,28 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
         public void onReceive(Context context, Intent intent) {
             if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
                 FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
-//                Log.d("MainActivity", "ACTION_UPDATE: " + fileInfo);
-                adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(), fileInfo.getLength());
-            } else if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
-                Toast.makeText(MainActivity.this, "Finished", Toast.LENGTH_SHORT).show();
-                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
-            } else if (DownloadContact.ACTION_DOWNLOAD.equals(intent.getAction())) {
-                FileInfo fileInfo = intent.getParcelableExtra(DownloadContact.FILE_INFO_KEY);
-                Log.d("MainActivity", "ACTION_CANCLE: " + fileInfo);
+                switch (fileInfo.getStatus()) {
+                    case DownloadContact.DOWNLOAD_DOWNLOADING:
+                        adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(),
+                                fileInfo.getLength());
+                        break;
+                    case DownloadContact.DOWNLOAD_FINISHED:
+                        adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(),
+                                fileInfo.getLength());
+                        Toast.makeText(MainActivity.this, "Finished", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DownloadContact.DOWNLOAD_CANCLE:
+                        adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(),
+                                fileInfo.getLength());
+                        Toast.makeText(MainActivity.this, "Cancle", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case DownloadContact.DOWNLOAD_PAUSE:
+                        adapter.updataProcess(fileInfo.getUrl(), fileInfo.getLoadSize(), fileInfo.getSpeed(),
+                                fileInfo.getLength());
+                        Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         }
     };
@@ -145,25 +159,29 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
 
         switch (v.getId()) {
             case R.id.btn_start_one:
-                DownloadManager.startDownload(this, listFileInfos.get(0), this);
+//                DownloadManager.startDownload(this, listFileInfos.get(0), this);
+                DownloadManager.startDLWithNotification(this, listFileInfos.get(0));
                 break;
             case R.id.btn_stop_one:
                 DownloadManager.stopDownload(listFileInfos.get(0).getUrl());
                 break;
             case R.id.btn_start_two:
-                DownloadManager.startDownload(this, listFileInfos.get(1), this);
+//                DownloadManager.startDownload(this, listFileInfos.get(1), this);
+                DownloadManager.startDLWithNotification(this, listFileInfos.get(1));
                 break;
             case R.id.btn_stop_two:
                 DownloadManager.stopDownload(listFileInfos.get(1).getUrl());
                 break;
             case R.id.btn_start_three:
                 DownloadManager.startDownload(this, listFileInfos.get(2), this);
+//                DownloadManager.startDLWithNotification(this, listFileInfos.get(2));
                 break;
             case R.id.btn_stop_three:
                 DownloadManager.stopDownload(listFileInfos.get(2).getUrl());
                 break;
             case R.id.btn_start_four:
                 DownloadManager.startDownload(this, listFileInfos.get(3), this);
+//                DownloadManager.startDLWithNotification(this, listFileInfos.get(3));
                 break;
             case R.id.btn_stop_four:
                 DownloadManager.stopDownload(listFileInfos.get(3).getUrl());

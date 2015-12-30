@@ -1,7 +1,11 @@
 package com.lib.download;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lib.download.contact.DownloadContact;
@@ -13,6 +17,7 @@ import com.lib.download.service.DownloadTask;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by long on 2015/11/16.
@@ -26,6 +31,10 @@ public class DownloadManager {
     private static Map<String, DownloadListener> mapTasksListener = new LinkedHashMap<>();
     // 配置器
     private static DownloadConfig config = new DownloadConfig.Builder().build();
+    // 随机数
+    private static Random mRandom = new Random();
+    // 文件和通知ID的映射
+    private static Map<String, Integer> mapNotify = new LinkedHashMap<>();
 
 
     private DownloadManager() {
@@ -88,7 +97,6 @@ public class DownloadManager {
      * @return
      */
     private static boolean checkFileIsExists(Context context, FileInfo fileInfo) {
-
         File file;
         if (fileInfo.getName().endsWith(".apk")) {
             file = new File(getDownloadDir(), fileInfo.getName());
@@ -97,7 +105,6 @@ public class DownloadManager {
         }
         if(file.exists()) {
             // 已经存在则删除重下
-//            Toast.makeText(context, "文件已经存在", Toast.LENGTH_SHORT).show();
             file.delete();
             if (ThreadDAOImpl.getInstance().isExists(fileInfo.getUrl())) {
                 // 删除数据库中的记录
@@ -160,7 +167,6 @@ public class DownloadManager {
             mapTasksListener.put(fileInfo.getUrl(), listener);
             listener.onDownloadWaiting(fileInfo);
         }
-//        Intent intentBroadcast = new Intent(DownloadContact.ACTION_WAIT);
         Intent intentBroadcast = new Intent(DownloadContact.ACTION_DOWNLOAD);
         intentBroadcast.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.sendBroadcast(intentBroadcast);
@@ -169,6 +175,108 @@ public class DownloadManager {
         intent.setAction(DownloadContact.ACTION_START);
         intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.startService(intent);
+    }
+
+    /**
+     * 开启带通知功能的下载，注意，该方法暂不适用外部监听器，需接收下载广播来监听
+     * @param context
+     * @param fileUrl
+     * @param fileName
+     */
+    public static void startDLWithNotification(Context context, String fileUrl, String fileName) {
+        FileInfo fileInfo = new FileInfo(0, fileUrl, fileName, 0);
+        startDLWithNotification(context, fileInfo);
+    }
+
+    /**
+     * 开启带通知功能的下载，注意，该方法暂不适用外部监听器，需接收下载广播来监听
+     * @param context
+     * @param fileInfo
+     */
+    public static void startDLWithNotification(final Context context, FileInfo fileInfo) {
+        final NotificationManager nm = (NotificationManager) context.getSystemService(Context
+                .NOTIFICATION_SERVICE);
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setSmallIcon(android.R.drawable.stat_sys_download);
+        final int notifyId;
+        if (mapNotify.containsKey(fileInfo.getUrl())) {
+            notifyId = mapNotify.get(fileInfo.getUrl());
+        } else {
+            notifyId = mRandom.nextInt(1024) + 1;
+        }
+
+        startDownload(context, fileInfo, new DownloadListener() {
+            @Override
+            public void onDownloadWaiting(FileInfo fileInfo) {
+
+            }
+
+            @Override
+            public void onDownloadStart(FileInfo fileInfo) {
+                Log.w("TAG", "onDownloadStart: " + notifyId);
+                if (!mapNotify.containsKey(fileInfo.getUrl())) {
+                    mapNotify.put(fileInfo.getUrl(), notifyId);
+                }
+                builder.setColor(DownloadContact.COLOR_NOTIFY_DEFAULT);
+                builder.setContentTitle(fileInfo.getName());
+                // 点击通知栏则暂停下载
+                builder.setContentIntent(setNotifyIntent(context, DownloadContact.ACTION_PAUSE, fileInfo, notifyId));
+            }
+
+            @Override
+            public void onDownloadUpdated(FileInfo fileInfo) {
+                Log.d("TAG", "onDownloadUpdated: " + notifyId);
+                builder.setProgress((int) fileInfo.getLength(), (int) fileInfo.getLoadSize(), false);
+                nm.notify(notifyId, builder.build());
+            }
+
+            @Override
+            public void onDownloadPaused(FileInfo fileInfo) {
+                Log.w("TAG", "onDownloadPaused: " + notifyId);
+                // 点击通知栏则继续下载
+                builder.setColor(DownloadContact.COLOR_NOTIFY_PAUSE);
+                builder.setContentIntent(setNotifyIntent(context, DownloadContact.ACTION_START, fileInfo, notifyId));
+                nm.notify(notifyId, builder.build());
+            }
+
+            @Override
+            public void onDownloadResumed(FileInfo fileInfo) {
+
+            }
+
+            @Override
+            public void onDownloadSuccessed(FileInfo fileInfo) {
+                Log.d("TAG", "onDownloadSuccessed");
+                mapNotify.remove(fileInfo.getUrl());
+                // 点击通知栏则去除通知（未增加安装功能）
+                builder.setColor(DownloadContact.COLOR_NOTIFY_FINISH);
+                builder.setSmallIcon(android.R.drawable.stat_sys_download_done);
+                builder.setContentIntent(setNotifyIntent(context, DownloadContact.ACTION_CANCLE, fileInfo, notifyId));
+                nm.notify(notifyId, builder.build());
+            }
+
+            @Override
+            public void onDownloadCanceled(FileInfo fileInfo) {
+                Log.e("TAG", "onDownloadCanceled: " + notifyId);
+                nm.cancel(notifyId);
+                mapNotify.remove(fileInfo.getUrl());
+            }
+
+            @Override
+            public void onDownloadFailed(FileInfo fileInfo) {
+                Log.d("TAG", "onDownloadFailed");
+                // 点击通知栏则继续下载
+                builder.setContentTitle(fileInfo.getName());
+                builder.setColor(DownloadContact.COLOR_NOTIFY_FAILED);
+                builder.setContentIntent(setNotifyIntent(context, DownloadContact.ACTION_START, fileInfo, notifyId));
+                nm.notify(notifyId, builder.build());
+            }
+
+            @Override
+            public void onDownloadRetry(FileInfo fileInfo) {
+
+            }
+        });
     }
 
     /**
@@ -191,7 +299,6 @@ public class DownloadManager {
     public static void cancleDownload(Context context, String fileUrl, String fileName) {
         DownloadTask task = mapTasks.get(fileUrl);
         if (task != null) {
-//            Log.e("DownloadServer", "ACTION_CANCLE: " + fileUrl);
             task.cancleDownload();
             mapTasks.remove(fileUrl);
             mapTasksListener.remove(fileUrl);
@@ -244,5 +351,22 @@ public class DownloadManager {
     public void clearDownloadTasks() {
         mapTasks.clear();
         mapTasksListener.clear();
+    }
+
+    /**
+     * 设置通知点击意图
+     * @param context
+     * @param action
+     * @param fileInfo
+     * @param notifyId
+     * @return
+     */
+    private static PendingIntent setNotifyIntent(Context context, String action, FileInfo fileInfo, int notifyId) {
+        Intent intent = new Intent(action);
+        intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
+        intent.putExtra(DownloadContact.NOTIFY_ID_KEY, notifyId);
+        // 这样处理会有问题，由于Action相同，存在两个以上时前面通知的Intent将被覆盖,可改成外部传入Intent来控制通知点击操作
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pi;
     }
 }

@@ -4,21 +4,13 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c63d6507-d1df-4837-a4c6-ce5591f89ece" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/contact/DownloadContact.java" />
-      <change type="DELETED" beforePath="E:\AndroidProject\Studio\MutilDownload\DownloaderLib\src\main\java\com\lib\download\contact\Contact.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadConfig.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadListener.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadListener.java" />
+    <list default="true" id="d5b2f46d-32b6-4110-8c1f-352b76eaf5dd" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/contact/DownloadContact.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/contact/DownloadContact.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadManager.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadServer.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadServer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadTask.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadTask.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderDemo/DownloaderDemo.iml" afterPath="$PROJECT_DIR$/DownloaderDemo/DownloaderDemo.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/DownloaderLib.iml" afterPath="$PROJECT_DIR$/DownloaderLib/DownloaderLib.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderDemo/src/main/java/com/demo/downloader/MainActivity.java" afterPath="$PROJECT_DIR$/DownloaderDemo/src/main/java/com/demo/downloader/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/db/ThreadDAOImpl.java" afterPath="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/db/ThreadDAOImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/design_23_1_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/design_23_1_0.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="MutilDownload.iws" />
@@ -47,56 +39,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DownloadManager.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DownloadManager.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="149" column="6" selection-start-line="149" selection-start-column="6" selection-end-line="149" selection-end-column="6" />
+            <state vertical-scroll-proportion="3.7514517">
+              <caret line="367" column="74" selection-start-line="367" selection-start-column="74" selection-end-line="367" selection-end-column="74" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DownloadContact.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/contact/DownloadContact.java">
+      <file leaf-file-name="DownloadServer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadServer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="5" column="28" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/DownloaderDemo/src/main/java/com/demo/downloader/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.9883856">
-              <caret line="66" column="45" selection-start-line="66" selection-start-column="45" selection-end-line="66" selection-end-column="45" />
-              <folding>
-                <element signature="e#3212#3521#0" expanded="true" />
-                <element signature="e#3520#3521#0" expanded="true" />
-                <element signature="e#5148#6170#0" expanded="true" />
-                <element signature="e#6169#6170#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DownloadConfig.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadConfig.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="14" column="21" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DownloadListener.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadListener.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
+              <caret line="170" column="64" selection-start-line="170" selection-start-column="64" selection-end-line="170" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -1890,10 +1847,10 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$/../GitHub/overscroll-decor" value="5798143870983" />
-        <entry key="$PROJECT_DIR$/../Market" value="5800292547555" />
-        <entry key="$PROJECT_DIR$/../Work/Market" value="4348443148872" />
-        <entry key="E:\AndroidProject\Studio\MutilDownload" value="5790374571584" />
+        <entry key="$PROJECT_DIR$/../../GitHub/overscroll-decor" value="5798143870983" />
+        <entry key="$PROJECT_DIR$/../../Market" value="10159062085517" />
+        <entry key="$PROJECT_DIR$/../../Work/Market" value="4348443148872" />
+        <entry key="E:\AndroidProject\Studio\MyDemo\MutilDownload" value="5790374571584" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2305,7 +2262,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/DownloaderDemo/src/main/java/com/demo/downloader/MainActivity.java" />
+        <option value="$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadManager.java" />
       </list>
     </option>
   </component>
@@ -2420,34 +2377,12 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MutilDownload" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DownloaderLib" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="download" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="contact" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane" />
+      <pane id="Scratches" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2457,9 +2392,7 @@
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="recentsLimit" value="5" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="7N2SSE1563003504" />
-    <property name="OverrideImplement.combined" value="true" />
-    <property name="OverrideImplement.overriding.sorted" value="false" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="192.168.56.101:5555" />
   </component>
   <component name="RunManager" selected="Android Application.DownloaderDemo">
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
@@ -2481,26 +2414,6 @@
       <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
-      <method />
-    </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
-      <module name="" />
-      <option name="TESTING_TYPE" value="0" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="EXTRA_OPTIONS" value="" />
-      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
-      <option name="FORCE_STOP_RUNNING_APP" value="true" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -2541,11 +2454,6 @@
         <option name="Make" enabled="false" />
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
-    </configuration>
-    <configuration default="true" type="JarApplication" factoryName="JAR Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <envs />
-      <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -2621,15 +2529,12 @@
     </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
-  <component name="SvnConfiguration">
-    <configuration />
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="c63d6507-d1df-4837-a4c6-ce5591f89ece" name="Default" comment="" />
-      <created>1450950815876</created>
+      <changelist id="d5b2f46d-32b6-4110-8c1f-352b76eaf5dd" name="Default" comment="" />
+      <created>1451468233646</created>
       <option name="number" value="Default" />
-      <updated>1450950815876</updated>
+      <updated>1451468233646</updated>
     </task>
     <servers />
   </component>
@@ -2638,11 +2543,11 @@
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295964" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295964" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295964" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -2653,7 +2558,7 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20405982" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -2676,48 +2581,19 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadListener.java">
+    <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/service/DownloadServer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="17" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="21" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="21" />
+          <caret line="170" column="64" selection-start-line="170" selection-start-column="64" selection-end-line="170" selection-end-column="64" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/DownloadManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="149" column="6" selection-start-line="149" selection-start-column="6" selection-end-line="149" selection-end-column="6" />
+        <state vertical-scroll-proportion="3.7514517">
+          <caret line="367" column="74" selection-start-line="367" selection-start-column="74" selection-end-line="367" selection-end-column="74" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DownloaderLib/src/main/java/com/lib/download/contact/DownloadContact.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="28" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DownloaderDemo/src/main/java/com/demo/downloader/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9883856">
-          <caret line="66" column="45" selection-start-line="66" selection-start-column="45" selection-end-line="66" selection-end-column="45" />
-          <folding>
-            <element signature="e#3212#3521#0" expanded="true" />
-            <element signature="e#3520#3521#0" expanded="true" />
-            <element signature="e#5148#6170#0" expanded="true" />
-            <element signature="e#6169#6170#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
