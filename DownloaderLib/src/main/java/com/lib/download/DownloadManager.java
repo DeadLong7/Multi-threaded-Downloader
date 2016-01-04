@@ -365,8 +365,9 @@ public class DownloadManager {
         Intent intent = new Intent(action);
         intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         intent.putExtra(DownloadContact.NOTIFY_ID_KEY, notifyId);
-        // 这样处理会有问题，由于Action相同，存在两个以上时前面通知的Intent将被覆盖,可改成外部传入Intent来控制通知点击操作
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // 这样处理会有问题，由于Action相同，如果requestCode 也相同则存在两个以上时前面通知的Intent将被覆盖,可改成外部传入Intent来控制通知点击操作
+        // 这里修改传入的 requestCode 参数来区分不同的 PendingIntent
+        PendingIntent pi = PendingIntent.getBroadcast(context, mRandom.nextInt(1024), intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pi;
     }
 }
