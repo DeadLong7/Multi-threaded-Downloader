@@ -17,8 +17,8 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -42,15 +42,16 @@ public class DownloadTask {
     private boolean isCancle = false;
     // 线程总数
     private int threadCount;
-    // 保存所有活动的线程
-    private List<DownloadThread> listDownloadThreads;
+    // 保存所有活动的线程,线程安全
+    private CopyOnWriteArrayList<DownloadThread> listDownloadThreads;
     // 线程返回异常的次数
     private int exceptionCount = 0;
     // 下载监听器
     private DownloadListener downloadListener;
-    // 已下载数据大小和时间，用来计算下载速度
+    // 已下载数据大小和时间、次数，用来计算下载速度
     private long calcLoadSize = 0;
     private long calcTime = 0;
+    private int calcCount = 2;
 
     // 线程池
     public static ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -73,16 +74,17 @@ public class DownloadTask {
         List<ThreadInfo> listThreadInfos = threadDao.getThreads(fileInfo.getUrl());
         ThreadInfo threadInfo = null;
         DownloadThread downloadThread = null;
-        listDownloadThreads = new ArrayList<DownloadThread>();
-
+        listDownloadThreads = new CopyOnWriteArrayList<DownloadThread>();
+        // 必须先初始化为0
         loadSize.set(0);
+
         if (listThreadInfos.size() == 0) {
             // 数据库不存在数据
             calcLoadSize = 0;
             long blockSize = fileInfo.getLength() / threadCount;
             for (int i = 0; i < threadCount; i++) {
                 threadInfo = new ThreadInfo(i, fileInfo.getUrl(), i * blockSize, blockSize, 0, DownloadContact.DOWNLOAD_DOWNLOADING);
-                if(i == threadCount - 1) {
+                if (i == threadCount - 1) {
                     // 除不尽余下的大小添加到最后
                     long remainderSize = fileInfo.getLength() % threadCount;
                     threadInfo.setSize(blockSize + remainderSize);
@@ -98,16 +100,15 @@ public class DownloadTask {
             fileInfo.setStatus(DownloadContact.DOWNLOAD_START);
             downloadListener.onDownloadStart(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 sendStatusBroadcast(fileInfo);
             }
         } else {
             // 数据库存在数据
             long fileLength = 0;
             threadCount = 0;
-            for(ThreadInfo info : listThreadInfos) {
+            for (ThreadInfo info : listThreadInfos) {
                 // 数据库存在数据则先保存整体文件的已下载长度
-//                loadSize += info.getLoadSize();
                 loadSize.getAndAdd(info.getLoadSize());
                 // 计算文件总长度
                 fileLength += info.getSize();
@@ -122,24 +123,23 @@ public class DownloadTask {
                 }
             }
             calcLoadSize = loadSize.get();
-//            calcLoadSize = loadSize;
             fileInfo.setLoadSize(calcLoadSize);
             fileInfo.setLength(fileLength);
             fileInfo.setStatus(DownloadContact.DOWNLOAD_START);
             sendStatusBroadcast(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadStart(fileInfo);
                 downloadListener.onDownloadResumed(fileInfo);
             }
         }
 
-        if(listDownloadThreads.size() == 0) {
+        if (listDownloadThreads.size() == 0) {
             // 没有下载线程，发送下载失败广播
             fileInfo.setStatus(DownloadContact.DOWNLOAD_FAILED);
             sendStatusBroadcast(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadFailed(fileInfo);
             }
         } else {
@@ -152,6 +152,7 @@ public class DownloadTask {
 
     /**
      * 发送进度广播
+     *
      * @param fileInfo
      */
     public void sendUpdateBroadcast(FileInfo fileInfo) {
@@ -160,13 +161,14 @@ public class DownloadTask {
         intent.putExtra(DownloadContact.FILE_INFO_KEY, fileInfo);
         context.sendBroadcast(intent);
         // 监听回调
-        if(downloadListener != null) {
+        if (downloadListener != null) {
             downloadListener.onDownloadUpdated(fileInfo);
         }
     }
 
     /**
      * 发送状态广播
+     *
      * @param fileInfo
      */
     public void sendStatusBroadcast(FileInfo fileInfo) {
@@ -184,6 +186,7 @@ public class DownloadTask {
 
     /**
      * 判断任务是否停止
+     *
      * @return
      */
     public boolean isTaskStop() {
@@ -222,6 +225,7 @@ public class DownloadTask {
                 // 发送取消广播
                 sendStatusBroadcast(fileInfo);
                 // 发送更新广播
+//                sendUpdateBroadcast(fileInfo);
                 // 删除数据库中的记录
                 threadDao.deleteThread(fileInfo.getUrl());
                 // 监听回调
@@ -234,6 +238,7 @@ public class DownloadTask {
 
     /**
      * 判断是否下载完成
+     *
      * @return
      */
     private synchronized void checkDownloadFinished() {
@@ -254,17 +259,17 @@ public class DownloadTask {
             // 删除数据库中的记录
             threadDao.deleteThread(fileInfo.getUrl());
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadSuccessed(fileInfo);
             }
             return;
         }
-        if(listDownloadThreads.size() == 0) {
+        if (listDownloadThreads.size() == 0) {
             // 如果没有下载完整且没有下载线程,则发送下载停止广播
             fileInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
             sendStatusBroadcast(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadPaused(fileInfo);
             }
         }
@@ -272,6 +277,7 @@ public class DownloadTask {
 
     /**
      * 重新开启线程下载
+     *
      * @param currentThread
      * @param threadInfo
      * @return 如果异常次数不超过MAX_EXCEPTION_NUM次则重启一个线程下载
@@ -285,7 +291,7 @@ public class DownloadTask {
             listDownloadThreads.add(newThread);
             threadPool.execute(newThread);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadRetry(fileInfo);
             }
             return true;
@@ -297,7 +303,7 @@ public class DownloadTask {
             fileInfo.setStatus(DownloadContact.DOWNLOAD_FAILED);
             sendStatusBroadcast(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadFailed(fileInfo);
             }
             return false;
@@ -307,13 +313,18 @@ public class DownloadTask {
     /**
      * 计算下载速度并更新进度
      */
-    private synchronized void calcDownloadSpeed(long calcTimetime) {
-        if(calcTimetime - calcTime > 500 && !isStop) {
-            // 下载速度为(b/s)
-            long speed = (loadSize.get() - calcLoadSize) * 1000 / (calcTimetime - calcTime);
+    private synchronized void calcDownloadSpeed(long curCalcTime) {
+        if (curCalcTime - calcTime > 300 && !isStop) {
+            // 3次更新一次下载速度
+            if ((++calcCount) > 2) {
+                // 下载速度为(b/s)
+                long speed = (loadSize.get() - calcLoadSize) * 1000 / (curCalcTime - calcTime);
+                fileInfo.setSpeed(speed);
+                calcCount = 0;
+                updateDatabase();
+            }
             calcLoadSize = loadSize.get();
-            calcTime = calcTimetime;
-            fileInfo.setSpeed(speed);
+            calcTime = curCalcTime;
             sendUpdateBroadcast(fileInfo);
         }
     }
@@ -328,12 +339,25 @@ public class DownloadTask {
             fileInfo.setSpeed(0);
             sendStatusBroadcast(fileInfo);
             // 监听回调
-            if(downloadListener != null) {
+            if (downloadListener != null) {
                 downloadListener.onDownloadPaused(fileInfo);
             }
         }
     }
 
+    /**
+     * 更新数据库
+     */
+    private void updateDatabase() {
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (DownloadThread thread : listDownloadThreads) {
+                    thread.updateThreadInfo();
+                }
+            }
+        });
+    }
 
 
     /**
@@ -347,6 +371,13 @@ public class DownloadTask {
         public DownloadThread(ThreadInfo threadInfo) {
             this.threadInfo = threadInfo;
             this.threadLoadSize = threadInfo.getLoadSize();
+        }
+
+        /**
+         * 更新线程数据库，开个接口给外部调用
+         */
+        public void updateThreadInfo() {
+            threadDao.updateThread(threadInfo);
         }
 
         @Override
@@ -369,7 +400,7 @@ public class DownloadTask {
                 if (conn.getResponseCode() == 206 || conn.getResponseCode() == 200) {
                     // 获取目标文件
                     File file = new File(DownloadManager.getDownloadDir(), fileInfo.getName() + ".tmp");
-                    if(!file.exists()) {
+                    if (!file.exists()) {
                         file.createNewFile();
                     }
                     raFile = new RandomAccessFile(file, "rw");
@@ -391,21 +422,19 @@ public class DownloadTask {
                         fileInfo.setLoadSize(loadSize.get());
                         threadLoadSize += readLen;
                         threadInfo.setLoadSize(threadLoadSize);
-                        threadDao.updateThread(threadInfo);
                         // 500MS执行一次发送进度广播
                         calcDownloadSpeed(time);
                         if (isStop) {
                             // 停止下载
                             threadInfo.setStatus(DownloadContact.DOWNLOAD_PAUSE);
                             threadDao.updateThread(threadInfo);
-                            // 移除当前线程
                             listDownloadThreads.remove(this);
                             checkStopDownload();
                             return;
                         }
                     }
 
-                    if(threadLoadSize != threadInfo.getSize()) {
+                    if (threadLoadSize != threadInfo.getSize()) {
                         // 如果下载的大小不是需要的大小,则重启一个线程继续下载
                         restartDownload(this, threadInfo);
                     } else {
@@ -433,7 +462,7 @@ public class DownloadTask {
                     if (inputStream != null) {
                         inputStream.close();
                     }
-                    if(raFile != null) {
+                    if (raFile != null) {
                         raFile.close();
                     }
                 } catch (IOException e) {

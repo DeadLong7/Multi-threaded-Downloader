@@ -160,11 +160,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
         switch (v.getId()) {
             case R.id.btn_start_one:
 //                DownloadManager.startDownload(this, listFileInfos.get(0), this);
-                DownloadManager.startDLWithNotification(this, listFileInfos.get(0));
+                DownloadManager.startDownload(this, listFileInfos.get(0), this);
                 break;
             case R.id.btn_stop_one:
                 DownloadManager.stopDownload(listFileInfos.get(0).getUrl());
                 break;
+            case R.id.btn_cancle_one:
+                DownloadManager.cancleDownload(this, listFileInfos.get(0).getUrl(), listFileInfos.get(0).getName());
+                break;
+
             case R.id.btn_start_two:
 //                DownloadManager.startDownload(this, listFileInfos.get(1), this);
                 DownloadManager.startDLWithNotification(this, listFileInfos.get(1));
@@ -172,29 +176,26 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
             case R.id.btn_stop_two:
                 DownloadManager.stopDownload(listFileInfos.get(1).getUrl());
                 break;
+            case R.id.btn_cancle_two:
+                DownloadManager.cancleDownload(this, listFileInfos.get(1).getUrl(), listFileInfos.get(1).getName());
+                break;
+
             case R.id.btn_start_three:
-                DownloadManager.startDownload(this, listFileInfos.get(2), this);
-//                DownloadManager.startDLWithNotification(this, listFileInfos.get(2));
+//                DownloadManager.startDownload(this, listFileInfos.get(2), this);
+                DownloadManager.startDLWithNotification(this, listFileInfos.get(2));
                 break;
             case R.id.btn_stop_three:
                 DownloadManager.stopDownload(listFileInfos.get(2).getUrl());
                 break;
+            case R.id.btn_cancle_three:
+                DownloadManager.cancleDownload(this, listFileInfos.get(2).getUrl(), listFileInfos.get(2).getName());
+                break;
+
             case R.id.btn_start_four:
                 DownloadManager.startDownload(this, listFileInfos.get(3), this);
-//                DownloadManager.startDLWithNotification(this, listFileInfos.get(3));
                 break;
             case R.id.btn_stop_four:
                 DownloadManager.stopDownload(listFileInfos.get(3).getUrl());
-                break;
-
-            case R.id.btn_cancle_one:
-                DownloadManager.cancleDownload(this, listFileInfos.get(0).getUrl(), listFileInfos.get(0).getName());
-                break;
-            case R.id.btn_cancle_two:
-                DownloadManager.cancleDownload(this, listFileInfos.get(1).getUrl(), listFileInfos.get(1).getName());
-                break;
-            case R.id.btn_cancle_three:
-                DownloadManager.cancleDownload(this, listFileInfos.get(2).getUrl(), listFileInfos.get(2).getName());
                 break;
             case R.id.btn_cancle_four:
                 DownloadManager.cancleDownload(this, listFileInfos.get(3).getUrl(), listFileInfos.get(3).getName());

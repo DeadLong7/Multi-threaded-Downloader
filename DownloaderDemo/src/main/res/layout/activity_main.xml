@@ -23,7 +23,7 @@
             android:id="@+id/btn_start_one"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下载"/>
+            android:text="正常下载"/>
         <Button
             android:id="@+id/btn_stop_one"
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
             android:id="@+id/btn_start_two"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下载"/>
+            android:text="通知下载"/>
         <Button
             android:id="@+id/btn_stop_two"
             android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
             android:id="@+id/btn_start_three"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下载"/>
+            android:text="通知下载"/>
         <Button
             android:id="@+id/btn_stop_three"
             android:layout_width="wrap_content"
@@ -89,7 +89,7 @@
             android:id="@+id/btn_start_four"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="下载"/>
+            android:text="正常下载"/>
         <Button
             android:id="@+id/btn_stop_four"
             android:layout_width="wrap_content"
