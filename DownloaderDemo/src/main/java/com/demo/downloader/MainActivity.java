@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
     private Button btnStopFour;
     private Button btnCancleFour;
     private Button btnDeleteDb;
+    private long timeStart, timeStop;
 
     private void assignViews() {
         listDownload = (ListView) findViewById(R.id.list_download);
@@ -215,6 +216,8 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
     @Override
     public void onDownloadStart(FileInfo fileInfo) {
         Log.d("MainActivity", "onDownloadStart: \n" + fileInfo);
+        timeStart = System.currentTimeMillis();
+        Log.e("TAG", "start: " + timeStart);
     }
 
     @Override
@@ -236,6 +239,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Down
     @Override
     public void onDownloadSuccessed(FileInfo fileInfo) {
         Log.d("MainActivity", "onDownloadSuccessed: \n" + fileInfo);
+        timeStop = System.currentTimeMillis();
+        Log.e("TAG", "stop: " + timeStop);
+        Log.w("TAG", "time: " + (timeStop - timeStart));
     }
 
     @Override

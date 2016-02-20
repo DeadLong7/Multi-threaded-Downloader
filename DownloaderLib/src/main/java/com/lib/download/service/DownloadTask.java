@@ -11,6 +11,7 @@ import com.lib.download.contact.ThreadInfo;
 import com.lib.download.db.ThreadDAO;
 import com.lib.download.db.ThreadDAOImpl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -365,6 +366,7 @@ public class DownloadTask {
      */
     private class DownloadThread extends Thread {
 
+        private static final int BUFFER_SIZE = 32 * 1024;
         private ThreadInfo threadInfo = null;
         private long threadLoadSize = 0;
 
@@ -409,12 +411,13 @@ public class DownloadTask {
                     sendUpdateBroadcast(fileInfo);
 
                     inputStream = conn.getInputStream();
-                    byte[] bytes = new byte[1024 * 4];
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, BUFFER_SIZE);
+                    byte[] bytes = new byte[1024 * 8];
                     int readLen;
                     // 计算所有线程的间隔总时间
 //                    Log.w("DownloadThread", "thread[" + fileInfo.getName() + "--" + threadInfo.getThreadId() + "]:{"
 //                            + threadLoadSize + " ~ " + threadInfo.getSize() + "}");
-                    while ((readLen = inputStream.read(bytes)) != -1) {
+                    while ((readLen = bufferedInputStream.read(bytes)) != -1) {
                         long time = System.currentTimeMillis();
                         raFile.write(bytes, 0, readLen);
                         loadSize.getAndAdd(readLen);
